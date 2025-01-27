@@ -1,0 +1,29 @@
+import Header from "../components/MainPage/Header/Header"
+import WorkerTable from "../components/MainPage/WorkerTable/WorkerTable"
+import React, { useState } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import Account from "../pages/Account";
+
+
+function MainPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchChange = (value) => {
+    setSearchQuery(value); // Обновляем состояние строки поиска
+  };
+
+
+  return (
+    <div>
+      <Header onSearchChange={handleSearchChange}/>
+      <main>
+          <Routes>
+            <Route path="/" element={<WorkerTable searchQuery={searchQuery} />} />
+            <Route path="/account" element={<Account/>} />
+          </Routes>
+      </main>
+    </div>
+  )
+}
+
+export default MainPage
