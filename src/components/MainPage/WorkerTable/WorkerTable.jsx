@@ -109,7 +109,7 @@ class WorkerTable extends React.Component {
 
   getData = async () => {
     try {
-      const response = await axios.get("http://localhost:5002/api/v1/workers", {
+      const response = await axios.get("http://10.90.25.125:5002/api/v1/workers", {
         headers: { "Content-Type": "application/json" },
       });
 

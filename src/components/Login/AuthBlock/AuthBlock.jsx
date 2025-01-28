@@ -12,7 +12,7 @@ export default function AuthBlock() {
         e.preventDefault(); // Предотвращаем перезагрузку страницы
 
         try {
-            const response = await fetch('http://localhost:5002/api/v1/login', {
+            const response = await fetch('http://10.95.25.125:5002/api/v1/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
