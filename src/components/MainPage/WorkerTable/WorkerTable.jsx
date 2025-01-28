@@ -84,7 +84,17 @@
 import React from "react";
 import axios from "axios";
 import Departament from "../Departament/Departament";
-import { Modal, Button } from "@/components/ui";
+// import { Modal, Button } from "@/components/ui";
+// import {
+//   Dialog,
+//   DialogTrigger,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogDescription,
+//   DialogFooter,
+// } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 class WorkerTable extends React.Component {
   constructor(props) {
@@ -109,7 +119,7 @@ class WorkerTable extends React.Component {
 
   getData = async () => {
     try {
-      const response = await axios.get("http://10.90.25.125:5002/api/v1/workers", {
+      const response = await axios.get("http://localhost:5002/api/v1/workers", {
         headers: { "Content-Type": "application/json" },
       });
 
