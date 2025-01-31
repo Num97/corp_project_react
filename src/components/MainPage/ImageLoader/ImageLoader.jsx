@@ -1,19 +1,3 @@
-// import React from 'react';
-
-// const ImageLoader = ({ id, alt }) => {
-//   let imageSrc;
-//   try {
-//     imageSrc = <img className='img_user' src={`/images/${id}.jpg`} alt={alt} />
-//   } catch (error) {
-//     console.error('Ошибка загрузки изображения:', error);
-//     imageSrc = <img className='img_user' src={`/images/unknown_user.jpg`} alt={alt} />
-//   }
-
-//   return imageSrc
-// };
-
-// export default ImageLoader;
-
 import React, { useState, useEffect } from 'react';
 
 const ImageLoader = ({ id, alt }) => {
