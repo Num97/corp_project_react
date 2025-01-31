@@ -1,7 +1,6 @@
 import './Worker.css'
 import React, { useState } from "react";
 import ImageLoader from '../ImageLoader/ImageLoader';
-// import unknownUserImage from '/images/unknown_user.jpg';
 import {
   Dialog,
   DialogTrigger,
@@ -10,20 +9,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-// import { Button } from "@/components/ui/button";
 
 export default function Worker(item) {
   const [isOpen, setIsOpen] = useState(false); // Состояние для управления модальным окном
-
-// const getImageSrc = (id) => {
-//     try {
-//       const imagePath = `/images/${id}.jpg`;
-//       return imagePath;
-//     } catch (error) {
-//       console.error('Ошибка загрузки изображения:', error);
-//       return '/images/unknown_user.jpg';
-//     }
-//   };
 
   return (
     <>
@@ -32,8 +20,8 @@ export default function Worker(item) {
         <DialogTrigger asChild>
           {/* Строка таблицы, которая открывает модальное окно */}
           <tr
-            onClick={() => setIsOpen(true)}
-            className="cursor-pointer hover:bg-gray-100"
+            onDoubleClick={() => setIsOpen(true)}
+            className="cursor-pointer row_hover"
           >
             <td>{item.data.position.String}</td>
             <td>{item.data.surname.String}</td>
@@ -51,7 +39,7 @@ export default function Worker(item) {
                 ? "+" + item.data.second_mobile_number.String
                 : ""}
             </td>
-            <td>{item.data.email.String}</td>
+            <td><a href={'mailto:' + item.data.email.String}>{item.data.email.String}</a></td>
           </tr>
         </DialogTrigger>
 
@@ -60,11 +48,17 @@ export default function Worker(item) {
           <DialogHeader>
             <DialogTitle>{item.data.first_name.String + ' ' + item.data.second_name.String + ' ' + item.data.surname.String}</DialogTitle>
             <DialogDescription>
-                {/* <img src={`/images/${item.data.id}.jpg`} alt={`Фото ${item.data.first_name.String}`} /> */}
-                {/* <img src={getImageSrc(item.data.id)} alt={`Фото ${item.data.first_name.String}`} /> */}
+                {/* <p>Телефон: {item.data.first_mobile_number.String}</p> */}
+                <p>
+                  {item.data.first_mobile_number.Valid
+                ? "Телефон: +" + item.data.first_mobile_number.String
+                : ""}</p>
+                <p>Email: {item.data.email.String}</p>
                 <ImageLoader id={item.data.id} alt={'Пользователь еще не установил фотографию'}/>
             </DialogDescription>
           </DialogHeader>
+          {/* <ImageLoader id={item.data.id} alt={'Пользователь еще не установил фотографию'}/>
+          <p>Телефон: {item.data.first_mobile_number.String}</p> */}
         </DialogContent>
       </Dialog>
     </>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthBlock.css';
+import { Link } from 'react-router-dom';
 
 export default function AuthBlock() {
     const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ export default function AuthBlock() {
         e.preventDefault(); // Предотвращаем перезагрузку страницы
 
         try {
-            const response = await fetch('http://10.90.25.125:5002/api/v1/login', {
+            const response = await fetch('http://10.90.25.243:5002/api/v1/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,6 +59,11 @@ export default function AuthBlock() {
                     </button>
                     {error && <p className="error">{error}</p>} {/* Вывод ошибки */}
                 </form>
+                <Link to="/signup">
+                    <button className="btn btn-secondary btn-block btn-large">
+                        Получить пароль
+                    </button>
+                </Link>
             </div>
         </div>
     );

@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import MainPage from './pages/MainPage';
+import RecoveryBlock from './components/Login/RecoveryBlock/RecoveryBlock';
 
 // Компонент для проверки токена
 const ProtectedRoute = ({ children }) => {
@@ -26,6 +27,7 @@ function App() {
           }
         />
         <Route path="/login" element={<Login />} />
+        <Route path='/signup' element={<RecoveryBlock/>} />
       </Routes>
     </div>
   );
