@@ -13,7 +13,7 @@ export default function AuthBlock() {
         e.preventDefault(); // Предотвращаем перезагрузку страницы
 
         try {
-            const response = await fetch('http://10.90.25.243:5002/api/v1/login', {
+            const response = await fetch('http://10.90.25.125:5002/api/v1/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export default function AuthBlock() {
                         onChange={(e) => setPassword(e.target.value)} // Обновляем state при вводе
                     />
                     <button type="submit" className="btn btn-primary btn-block btn-large">
-                        Let me in.
+                        Войти
                     </button>
                     {error && <p className="error">{error}</p>} {/* Вывод ошибки */}
                 </form>
