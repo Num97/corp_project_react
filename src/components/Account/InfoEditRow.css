@@ -1,3 +1,15 @@
 .info-edit {
     width: 40%;
 }
+
+.info-edit td {
+    height: 43px;
+}
+
+.info-input-passive {
+    display: none;
+}
+
+.info-td-passive {
+    display: none;
+}

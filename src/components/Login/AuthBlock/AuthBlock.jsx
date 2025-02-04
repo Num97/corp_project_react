@@ -57,13 +57,13 @@ export default function AuthBlock() {
                     <button type="submit" className="btn btn-primary btn-block btn-large">
                         Войти
                     </button>
-                    {error && <p className="error">{error}</p>} {/* Вывод ошибки */}
                 </form>
                 <Link to="/signup">
                     <button className="btn btn-secondary btn-block btn-large">
                         Получить пароль
                     </button>
                 </Link>
+                {error && <p className="error">{error}</p>} {/* Вывод ошибки */}
             </div>
         </div>
     );

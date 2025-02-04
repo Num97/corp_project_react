@@ -4,7 +4,7 @@ const ImageLoader = ({ id, alt }) => {
   const [imageSrc, setImageSrc] = useState(`/images/${id}.jpg`);
 
   useEffect(() => {
-    const extensions = ['jpg', 'jpeg', 'png', 'webp', 'JPG']; // Список расширений
+    const extensions = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'NEF']; // Список расширений
     let currentExtensionIndex = 0;
 
     const tryLoadImage = () => {
