@@ -21,7 +21,8 @@ class WorkerTable extends React.Component {
 
   getData = async () => {
     try {
-      const response = await axios.get('http://10.90.25.125:5002/api/v1/workers', {
+      // Используем пропс apiUrl для запроса данных
+      const response = await axios.get(this.props.apiUrl, {
         headers: { 'Content-Type': 'application/json' },
       });
 

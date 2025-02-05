@@ -11,7 +11,7 @@ const InfoEditRow = forwardRef(({ data, isEditing }, ref) => {
             <tbody>
                 {[
                     { label: 'Фамилия', key: 'surname' },
-                    { label: 'Имя', key: 'firstname' },
+                    { label: 'Имя', key: 'first_name' },
                     { label: 'Отчество', key: 'second_name' },
                     { label: 'Отдел', key: 'department' },
                     { label: 'Должность', key: 'position' },
@@ -19,19 +19,19 @@ const InfoEditRow = forwardRef(({ data, isEditing }, ref) => {
                     { label: 'Внутренний номер', key: 'inside_number' },
                     { label: 'Сотовый 1', key: 'first_mobile_number' },
                     { label: 'Сотовый 2', key: 'second_mobile_number' },
-                    { label: 'Email', key: 'email' },
-                ].map(({ label, key }) => (
+                    { label: 'Email', key: 'email', isEditable: false }, // Запрещаем редактирование
+                ].map(({ label, key, isEditable = true }) => (
                     <tr key={key} className='info-element'>
                         <td>{label}:</td>
-                        <td className={isEditing ? 'info-td-passive' : 'info-td-active'}>
+                        <td className={isEditing && isEditable ? 'info-td-passive' : 'info-td-active'}>
                             {renderValue(data[key])}
                         </td>
-                        <td className={isEditing ? 'info-input-active' : 'info-input-passive'}>
+                        <td className={isEditing && isEditable ? 'info-input-active' : 'info-input-passive'}>
                             <input 
                                 type="text" 
                                 name={key} 
                                 defaultValue={renderValue(data[key])} 
-                                readOnly={!isEditing} 
+                                readOnly={!isEditing || !isEditable} // Запрещаем редактирование email
                             />
                         </td>
                     </tr>
