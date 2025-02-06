@@ -59,4 +59,13 @@ tr td:nth-child(9) {
 }
 .row_hover:hover {
 	background: rgb(59, 227, 160);
+	cursor: pointer;
+}
+
+.modal-bg-gray img{
+	margin-top: 20px;
+}
+
+.text-hover {
+	cursor: auto;
 }

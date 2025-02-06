@@ -4,12 +4,14 @@ import InfoEditRow from '../components/Account/InfoEditRow';
 import ImageLoader from '../components/MainPage/ImageLoader/ImageLoader';
 import './PagesStyle/Account.css';
 import editButton from '/editButton.svg';
-import WorkerTable from '../components/MainPage/WorkerTable/WorkerTable'
+import WorkerTable from '../components/MainPage/WorkerTable/WorkerTable';
 
 export default function Account() {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [message, setMessage] = useState(''); // Новое состояние для уведомления
+  const [message, setMessage] = useState('');
+  const [isApiAvailable, setIsApiAvailable] = useState(false);
+  const [tableKey, setTableKey] = useState(0);  // Используем ключ для принудительного рендера
   const tableRef = useRef(null);
 
   useEffect(() => {
@@ -18,7 +20,6 @@ export default function Account() {
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        
         if (decodedToken) {
           setUserData({
             id: decodedToken.id || null,
@@ -40,76 +41,98 @@ export default function Account() {
     }
   }, []);
 
-  const toggleEditMode = () => {
-    setIsEditing((prev) => !prev);
-    setMessage(''); // Скрываем сообщение при новом редактировании
+  // Функция проверки доступности API
+  const checkApiAvailability = () => {
+    if (!userData?.id) return;
+
+    const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_list_user_get/${userData.id}`;
+    
+    fetch(apiUrl)
+      .then((res) => {
+        if (res.ok) {
+          setIsApiAvailable(true);
+        } else {
+          setIsApiAvailable(false);
+        }
+      })
+      .catch(() => setIsApiAvailable(false));
   };
 
-const handleSave = (workerId) => {
-  if (tableRef.current) {
+  // Запускаем проверку API при изменении userData.id и при обновлениях
+  useEffect(() => {
+    checkApiAvailability();
+  }, [userData?.id]); // Перезапускаем при изменении userData.id
+
+  const toggleEditMode = () => {
+    setIsEditing((prev) => !prev);
+    setMessage('');
+  };
+
+  const handleSave = (workerId) => {
+    if (tableRef.current) {
       const inputs = tableRef.current.querySelectorAll('input');
-      const formData = { id: workerId }; // Добавляем worker_id
-
+      const formData = { id: workerId };
+  
       inputs.forEach((input) => {
-          const value = input.value.trim();
-          formData[input.name] = {
-              String: value === "" ? "" : value, // Пустые строки оставляем пустыми
-              Valid: value !== "" // Valid = true, если значение не пустое
-          };
+        const value = input.value.trim();
+        formData[input.name] = {
+          String: value === "" ? "" : value,
+          Valid: value !== ""
+        };
       });
-
-      console.log("Отправляемые данные:", JSON.stringify(formData, null, 2));
-
-      // Отправляем данные на сервер
-      fetch('http://10.90.25.125:5002/api/v1/waiting_edit_list_add', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
+  
+      const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_edit_list_add`;
+  
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       })
-      .then(response => response.json().then(data => ({ status: response.status, body: data })))
-      .then(({ status, body }) => {
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
           if (status === 200) {
-              console.log('Success:', body);
-              setMessage('Данные отправлены на модерацию');
+            setMessage('Данные отправлены на модерацию');
+  
+            // После успешного сохранения, обновляем состояние
+            setTableKey(prevKey => prevKey + 1); // Изменяем ключ для принудительного рендера
+            setIsEditing(false);
           } else {
-              console.error('Ошибка:', body);
-              setMessage(`Ошибка: ${body.error || "Неизвестная ошибка"}`);
+            console.error('Ошибка:', body);
+            setMessage(`Ошибка: ${body.error || "Неизвестная ошибка"}`);
           }
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           console.error('Ошибка сети:', error);
           setMessage('Ошибка сети при отправке данных');
-      });
-
-      // Закрываем режим редактирования
-      setIsEditing(false);
-  }
-};
+        });
+    }
+  };
 
   return (
     <>
       <div className='account-welcome'>
         <h1>Добро пожаловать, {userData ? userData.first_name.String : 'Гость'}!</h1>
         <div>
-        <img 
-          src={editButton} 
-          alt="Edit Button" 
-          width={40} 
-          onClick={toggleEditMode}
-        /></div>
-        {isEditing && (
-        <div className="info-btn-active">
-          <button 
-            type="button" 
-            className="btn btn-primary btn-block btn-large btn-save" 
-            onClick={() => handleSave(userData.id)}
-          >
-            Сохранить
-          </button>
+          <img 
+            src={editButton} 
+            alt="Edit Button" 
+            width={40} 
+            onClick={toggleEditMode}
+          />
         </div>
-      )}
+        {isEditing && (
+          <div className="info-btn-active">
+            <button 
+              type="button" 
+              className="btn btn-primary btn-block btn-large btn-save" 
+              onClick={() => handleSave(userData.id)}
+            >
+              Сохранить
+            </button>
+          </div>
+        )}
 
         {message && (
           <div className="success-message">
@@ -124,7 +147,30 @@ const handleSave = (workerId) => {
           {userData && <ImageLoader id={userData.id} alt={'Фото'} />}
         </div>
       </div>
-      <WorkerTable searchQuery='' apiUrl="http://10.90.25.125:5002/api/v1/waiting_list_user_get/51" />
+
+      {/* Используем ключ для принудительного рендера таблицы */}
+      {isApiAvailable && (
+        <div className='info-moderation-user'>
+          <h3>Ваши данные на модерации</h3>
+          <WorkerTable 
+            key={tableKey}  // Принудительно меняем ключ для рендера
+            searchQuery='' 
+            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get/${userData.id}`} 
+          />
+        </div>
+      )}
+
+        {/* Модерация для кадрового отдела */}
+        {userData && userData.department.String == 'Служба управления персоналом' && (
+        <div className='info-moderation-user'>
+          <h3>Данные пользователей на модерации</h3>
+          <WorkerTable 
+            searchQuery=''
+            key={tableKey} 
+            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get`} 
+          />
+        </div>
+      )}
     </>
   );
 }

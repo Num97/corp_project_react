@@ -41,3 +41,11 @@
     margin-left: 40px;
     color: rgb(208, 76, 76);
 }
+
+.info-moderation-user {
+    margin-bottom: 30px;
+}
+
+.info-moderation-user h3 {
+    text-align: center;
+}
