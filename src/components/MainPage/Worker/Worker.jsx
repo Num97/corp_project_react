@@ -1,6 +1,7 @@
 import './Worker.css';
 import React, { useState } from "react";
 import ImageLoader from '../ImageLoader/ImageLoader';
+import { useLocation } from "react-router-dom";
 import {
   Dialog,
   DialogTrigger,
@@ -12,8 +13,10 @@ import {
 import { jwtDecode } from 'jwt-decode';
 import checkButton from '/checkButton.svg';
 import trashButton from '/trashButton.svg';
+import penEditButton from '/penEditButton.svg';
+import rejectButton from '/rejectButton.svg';
 
-// Функция получения department из токена (пример)
+// // Функция получения department из токена (пример)
 function getUserDepartment() {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -33,6 +36,56 @@ function getUserDepartment() {
 export default function Worker(item) {
   const [isOpen, setIsOpen] = useState(false);
   const userDepartment = getUserDepartment(); // Получаем department из токена
+  const location = useLocation();
+
+  // const handleClickAcceptUser = async () => {
+  //   console.log(item.data);
+  //   try {
+  //     const response = await fetch("http://10.90.25.125:5002/api/v1/waiting_edit_list_accept_user", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(item.data), // Отправляем весь объект item
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  //     }
+  
+  //     const result = await response.json();
+  //     console.log("Успешный ответ:", result);
+  //   } catch (error) {
+  //     console.error("Ошибка при отправке запроса:", error);
+  //   }
+  // };
+
+  const handleClickAcceptUser = async () => {
+    console.log(item.data);
+    try {
+      const response = await fetch("http://10.90.25.125:5002/api/v1/waiting_edit_list_accept_user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item.data), // Отправляем весь объект item
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+      }
+  
+      const result = await response.json();
+      console.log("Успешный ответ:", result);
+  
+      // Вызываем onUpdate после успешного ответа
+      if (item.onUpdate) {  // Теперь onUpdate доступен через item
+        item.onUpdate();  // Вызовем onUpdate, переданный через item
+      }
+    } catch (error) {
+      console.error("Ошибка при отправке запроса:", error);
+    }
+  };
 
   return (
     <>
@@ -69,14 +122,26 @@ export default function Worker(item) {
           </td>
           <td><a href={'mailto:' + item.data.email.String}>{item.data.email.String}</a></td>
 
-          {/* Показываем кнопки только если department == 'Служба управления персоналом' */}
-          {userDepartment === 'Служба управления персоналом' && (
+          {/* Показываем кнопки только если department == 'Служба управления персоналом' на эндпоинте / */}
+          {userDepartment === 'Служба управления персоналом' && location.pathname === "/" && (
             <>
               <td>
-                <img src={checkButton} alt="Check Button" width={15} />
+                <img src={penEditButton} alt="Check Button" width={17} />
               </td>
               <td>
                 <img src={trashButton} alt="Trash Button" width={15} />
+              </td>
+            </>
+          )}
+
+          {/* Показываем кнопки только если department == 'Служба управления персоналом' на эндпоинте /account */}
+          {userDepartment === 'Служба управления персоналом' && location.pathname === "/account" && (
+            <>
+              <td onClick={handleClickAcceptUser}>
+                <img src={checkButton} alt="Check Button" width={15} />
+              </td>
+              <td>
+                <img src={rejectButton} alt="Trash Button" width={20} />
               </td>
             </>
           )}
@@ -86,12 +151,6 @@ export default function Worker(item) {
           <DialogHeader>
             <DialogTitle>{`${item.data.first_name.String} ${item.data.second_name.String} ${item.data.surname.String}`}</DialogTitle>
             <DialogDescription>
-              {item.data.first_mobile_number.Valid && (
-                <>
-                  Телефон: +{item.data.first_mobile_number.String}<br />
-                </>
-              )}
-              Email: {item.data.email.String}<br />
               <ImageLoader id={item.data.id} alt={'Пользователь еще не установил фотографию'} />
             </DialogDescription>
           </DialogHeader>

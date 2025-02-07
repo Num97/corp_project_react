@@ -1,61 +1,54 @@
 import './Departament.css'
 import Worker from '../Worker/Worker'
 import TheadRow from'../TheadRow/TheadRow'
+import { jwtDecode } from 'jwt-decode';
 
-export default function Departament({data}) {
+function getUserDepartment() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.warn("Токен отсутствует в localStorage");
+    return "";
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.department || "";
+  } catch (error) {
+    console.error("Ошибка декодирования токена:", error);
+    return "";
+  }
+}
+
+export default function Departament({data, onUpdate}) {
+    const userDepartment = getUserDepartment(); // Получаем department из токена
     return (
                 <table>
                     <thead>
+
+                    {userDepartment != 'Служба управления персоналом' && (
                         <tr>
                             <th colSpan={9}>{data[0].department.String}</th>
                         </tr>
+                        )}
+                    {userDepartment != 'Служба управления персоналом' && (
                         <TheadRow headers={['Должность', 'Фамилия', 'Имя', 'Отчество', 'Внутренний', 'Внешний', 'Сотовый 1', 'Сотовый 2', 'email']}/>
+                    )}
+
+                    {userDepartment === 'Служба управления персоналом' && (
+                        <tr>
+                            <th colSpan={11}>{data[0].department.String}</th>
+                        </tr>
+                        )}
+                    {userDepartment === 'Служба управления персоналом' && (
+                        <TheadRow headers={['Должность', 'Фамилия', 'Имя', 'Отчество', 'Внутренний', 'Внешний', 'Сотовый 1', 'Сотовый 2', 'email', '', '']}/>
+                    )}
+
                     </thead>
                     <tbody>
                        {data.map((item) => (
-                            <Worker key={item.id} data={item}/>                           
+                            <Worker key={item.id} data={item} item={{ ...item, onUpdate }}/>                           
                         ))}
                     </tbody>
                 </table>
     )
 }
-
-// import './Departament.css';
-// import Worker from '../Worker/Worker';
-// import TheadRow from '../TheadRow/TheadRow';
-
-// export default function Departament({ data, onWorkerClick }) {
-//   return (
-//     <table>
-//       <thead>
-//         <tr>
-//           <th colSpan={9}>{data[0].department.String}</th>
-//         </tr>
-//         <TheadRow
-//           headers={[
-//             'Должность',
-//             'Фамилия',
-//             'Имя',
-//             'Отчество',
-//             'Внутренний',
-//             'Внешний',
-//             'Сотовый 1',
-//             'Сотовый 2',
-//             'email',
-//           ]}
-//         />
-//       </thead>
-//       <tbody>
-//         {data.map((item) => (
-//           <tr
-//             key={item.id}
-//             onClick={() => onWorkerClick(item)} // Добавляем обработчик клика
-//             className="hover:bg-gray-100 cursor-pointer" // Добавляем стили для наведения
-//           >
-//             <Worker data={item} />
-//           </tr>
-//         ))}
-//       </tbody>
-//     </table>
-//   );
-// }

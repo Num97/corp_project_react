@@ -67,12 +67,13 @@ class WorkerTable extends React.Component {
 
   render() {
     const { filteredData } = this.state;
+    const { onUpdate } = this.props; 
 
     return (
       <>
         {Object.keys(filteredData).map((department) => (
           <div key={department}>
-            <Departament departament={department} data={filteredData[department]} />
+            <Departament departament={department} data={filteredData[department]} onUpdate={onUpdate} />
           </div>
         ))}
       </>

@@ -11,6 +11,7 @@ export default function Account() {
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState('');
   const [isApiAvailable, setIsApiAvailable] = useState(false);
+  const [isApiAvailableAllUsers, setIsApiAvailableAllUsers] = useState(false);
   const [tableKey, setTableKey] = useState(0);  // Используем ключ для принудительного рендера
   const tableRef = useRef(null);
 
@@ -41,6 +42,10 @@ export default function Account() {
     }
   }, []);
 
+  const handleTableUpdate = () => {
+    setTableKey(prevKey => prevKey + 1); // Изменяем ключ для принудительного рендера
+  };
+
   // Функция проверки доступности API
   const checkApiAvailability = () => {
     if (!userData?.id) return;
@@ -58,9 +63,26 @@ export default function Account() {
       .catch(() => setIsApiAvailable(false));
   };
 
+    // Функция проверки доступности API
+    const checkApiAvailabilityAllUsers = () => {
+  
+      const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_list_user_get`;
+      
+      fetch(apiUrl)
+        .then((res) => {
+          if (res.ok) {
+            setIsApiAvailableAllUsers(true);
+          } else {
+            setIsApiAvailableAllUsers(false);
+          }
+        })
+        .catch(() => setIsApiAvailableAllUsers(false));
+    };
+
   // Запускаем проверку API при изменении userData.id и при обновлениях
   useEffect(() => {
     checkApiAvailability();
+    checkApiAvailabilityAllUsers();
   }, [userData?.id]); // Перезапускаем при изменении userData.id
 
   const toggleEditMode = () => {
@@ -95,8 +117,12 @@ export default function Account() {
           if (status === 200) {
             setMessage('Данные отправлены на модерацию');
   
-            // После успешного сохранения, обновляем состояние
-            setTableKey(prevKey => prevKey + 1); // Изменяем ключ для принудительного рендера
+            // Повторно проверяем доступность API
+            checkApiAvailability();
+            checkApiAvailabilityAllUsers();
+  
+            // Обновляем ключ для принудительного рендера
+            setTableKey(prevKey => prevKey + 1);
             setIsEditing(false);
           } else {
             console.error('Ошибка:', body);
@@ -109,6 +135,7 @@ export default function Account() {
         });
     }
   };
+  
 
   return (
     <>
@@ -161,13 +188,14 @@ export default function Account() {
       )}
 
         {/* Модерация для кадрового отдела */}
-        {userData && userData.department.String == 'Служба управления персоналом' && (
+        {userData && userData.department.String == 'Служба управления персоналом' && isApiAvailableAllUsers && (
         <div className='info-moderation-user'>
           <h3>Данные пользователей на модерации</h3>
           <WorkerTable 
             searchQuery=''
             key={tableKey} 
-            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get`} 
+            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get`}
+            onUpdate={handleTableUpdate} 
           />
         </div>
       )}

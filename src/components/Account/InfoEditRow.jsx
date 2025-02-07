@@ -13,7 +13,7 @@ const InfoEditRow = forwardRef(({ data, isEditing }, ref) => {
                     { label: 'Фамилия', key: 'surname' },
                     { label: 'Имя', key: 'first_name' },
                     { label: 'Отчество', key: 'second_name' },
-                    { label: 'Отдел', key: 'department' },
+                    { label: 'Отдел', key: 'department', isEditable: false },
                     { label: 'Должность', key: 'position' },
                     { label: 'Внешний номер', key: 'outside_number' },
                     { label: 'Внутренний номер', key: 'inside_number' },
