@@ -38,32 +38,9 @@ export default function Worker(item) {
   const userDepartment = getUserDepartment(); // Получаем department из токена
   const location = useLocation();
 
-  // const handleClickAcceptUser = async () => {
-  //   console.log(item.data);
-  //   try {
-  //     const response = await fetch("http://10.90.25.125:5002/api/v1/waiting_edit_list_accept_user", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(item.data), // Отправляем весь объект item
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
-  //     }
-  
-  //     const result = await response.json();
-  //     console.log("Успешный ответ:", result);
-  //   } catch (error) {
-  //     console.error("Ошибка при отправке запроса:", error);
-  //   }
-  // };
-
   const handleClickAcceptUser = async () => {
-    console.log(item.data);
     try {
-      const response = await fetch("http://10.90.25.125:5002/api/v1/waiting_edit_list_accept_user", {
+      const response = await fetch("http://localhost:5002/api/v1/waiting_edit_list_accept_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,8 +56,8 @@ export default function Worker(item) {
       console.log("Успешный ответ:", result);
   
       // Вызываем onUpdate после успешного ответа
-      if (item.onUpdate) {  // Теперь onUpdate доступен через item
-        item.onUpdate();  // Вызовем onUpdate, переданный через item
+      if (item.item.onUpdate) {  
+        item.item.onUpdate(`Данные для ${item.data.email.String} одобрены`); 
       }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);

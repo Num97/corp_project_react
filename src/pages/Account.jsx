@@ -42,15 +42,23 @@ export default function Account() {
     }
   }, []);
 
-  const handleTableUpdate = () => {
-    setTableKey(prevKey => prevKey + 1); // Изменяем ключ для принудительного рендера
+  // const handleTableUpdate = () => {
+  //   setTableKey(prevKey => prevKey + 1); // Изменяем ключ для принудительного рендера
+  //   console.log("onUpdate вызван!");
+  // };
+
+  const handleTableUpdate = (newMessage) => {
+    setTableKey((prevKey) => prevKey + 1); // Принудительный рендер
+    if (newMessage) {
+      setMessage(newMessage); // Устанавливаем сообщение
+    }
   };
 
   // Функция проверки доступности API
   const checkApiAvailability = () => {
     if (!userData?.id) return;
 
-    const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_list_user_get/${userData.id}`;
+    const apiUrl = `http://localhost:5002/api/v1/waiting_list_user_get/${userData.id}`;
     
     fetch(apiUrl)
       .then((res) => {
@@ -66,7 +74,7 @@ export default function Account() {
     // Функция проверки доступности API
     const checkApiAvailabilityAllUsers = () => {
   
-      const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_list_user_get`;
+      const apiUrl = `http://localhost:5002/api/v1/waiting_list_user_get`;
       
       fetch(apiUrl)
         .then((res) => {
@@ -103,7 +111,7 @@ export default function Account() {
         };
       });
   
-      const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_edit_list_add`;
+      const apiUrl = `http://localhost:5002/api/v1/waiting_edit_list_add`;
   
       fetch(apiUrl, {
         method: 'POST',
@@ -176,25 +184,26 @@ export default function Account() {
       </div>
 
       {/* Используем ключ для принудительного рендера таблицы */}
-      {isApiAvailable && (
+      {isApiAvailable && userData.department.String != 'Служба управления персоналом' && (
         <div className='info-moderation-user'>
           <h3>Ваши данные на модерации</h3>
           <WorkerTable 
             key={tableKey}  // Принудительно меняем ключ для рендера
             searchQuery='' 
-            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get/${userData.id}`} 
+            apiUrl={`http://localhost:5002/api/v1/waiting_list_user_get/${userData.id}`} 
+            onUpdate={handleTableUpdate} 
           />
         </div>
       )}
 
         {/* Модерация для кадрового отдела */}
-        {userData && userData.department.String == 'Служба управления персоналом' && isApiAvailableAllUsers && (
+        {userData && userData.department.String === 'Служба управления персоналом' && isApiAvailableAllUsers && (
         <div className='info-moderation-user'>
           <h3>Данные пользователей на модерации</h3>
           <WorkerTable 
             searchQuery=''
             key={tableKey} 
-            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get`}
+            apiUrl={`http://localhost:5002/api/v1/waiting_list_user_get`}
             onUpdate={handleTableUpdate} 
           />
         </div>

@@ -20,7 +20,7 @@ function MainPage() {
           <Routes>
           <Route 
             path="/" 
-            element={<WorkerTable searchQuery={searchQuery} apiUrl="http://10.90.25.125:5002/api/v1/workers" />} 
+            element={<WorkerTable searchQuery={searchQuery} apiUrl="http://localhost:5002/api/v1/workers" />} 
           />
             <Route path="/account" element={<Account/>} />
           </Routes>
