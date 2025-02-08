@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Departament from "../Departament/Departament";
+import "./WorkerTable.css"
 
 class WorkerTable extends React.Component {
   constructor(props) {
