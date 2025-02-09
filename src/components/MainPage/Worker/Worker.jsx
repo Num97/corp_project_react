@@ -64,6 +64,64 @@ export default function Worker(item) {
     }
   };
 
+  const handleClickRejectUser = async () => {
+    try {
+      const response = await fetch("http://localhost:5002/api/v1/waiting_edit_list_reject_user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item.data), // Отправляем весь объект item
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+      }
+  
+      const result = await response.json();
+      console.log("Успешный ответ:", result);
+  
+      // Вызываем onUpdate после успешного ответа
+      if (item.item.onUpdate) {  
+        item.item.onUpdate(`Данные для ${item.data.email.String} отклонены`); 
+      }
+    } catch (error) {
+      console.error("Ошибка при отправке запроса:", error);
+    }
+  };
+
+  const handleClickDismissWorker = async () => {
+    const isConfirmed = confirm("Вы уверены, что хотите уволить сотрудника?");
+    if (!isConfirmed) {
+      console.log("Действие отменено пользователем.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:5002/api/v1/dismiss_worker", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(item.data), // Отправляем весь объект item
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+      }
+  
+      const result = await response.json();
+      console.log("Успешный ответ:", result);
+  
+      // Вызываем onDismiss после успешного ответа
+      if (item.onDismiss) {
+        item.onDismiss(); // Уведомляем Departament об увольнении сотрудника
+      }
+    } catch (error) {
+      console.error("Ошибка при отправке запроса:", error);
+    }
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -105,7 +163,7 @@ export default function Worker(item) {
               <td>
                 <img src={penEditButton} alt="Check Button" width={17} />
               </td>
-              <td>
+              <td onClick={handleClickDismissWorker}>
                 <img src={trashButton} alt="Trash Button" width={15} />
               </td>
             </>
@@ -117,7 +175,7 @@ export default function Worker(item) {
               <td onClick={handleClickAcceptUser}>
                 <img src={checkButton} alt="Check Button" width={15} />
               </td>
-              <td>
+              <td onClick={handleClickRejectUser}>
                 <img src={rejectButton} alt="Trash Button" width={20} />
               </td>
             </>

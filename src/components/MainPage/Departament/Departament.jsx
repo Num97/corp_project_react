@@ -1,6 +1,7 @@
-import './Departament.css'
-import Worker from '../Worker/Worker'
-import TheadRow from'../TheadRow/TheadRow'
+import React, { useState } from 'react'; // Импортируем useState
+import './Departament.css';
+import Worker from '../Worker/Worker';
+import TheadRow from '../TheadRow/TheadRow';
 import { jwtDecode } from 'jwt-decode';
 
 function getUserDepartment() {
@@ -19,36 +20,47 @@ function getUserDepartment() {
   }
 }
 
-export default function Departament({data, onUpdate}) {
-    const userDepartment = getUserDepartment(); // Получаем department из токена
-    return (
-                <table>
-                    <thead>
+export default function Departament({ data, onUpdate }) {
+  const userDepartment = getUserDepartment();
+  const [workers, setWorkers] = useState(data); // Состояние для хранения данных о сотрудниках
 
-                    {userDepartment != 'Служба управления персоналом' && (
-                        <tr>
-                            <th colSpan={9}>{data[0].department.String}</th>
-                        </tr>
-                        )}
-                    {userDepartment != 'Служба управления персоналом' && (
-                        <TheadRow headers={['Должность', 'Фамилия', 'Имя', 'Отчество', 'Внутренний', 'Внешний', 'Сотовый 1', 'Сотовый 2', 'email']}/>
-                    )}
+  // Функция для обновления состояния после увольнения сотрудника
+  const handleWorkerDismissed = (dismissedWorkerId) => {
+    setWorkers((prevWorkers) => prevWorkers.filter((worker) => worker.id !== dismissedWorkerId));
+    onUpdate(); // Вызываем переданную функцию onUpdate, если она есть
+  };
 
-                    {userDepartment === 'Служба управления персоналом' && (
-                        <tr>
-                            <th colSpan={11}>{data[0].department.String}</th>
-                        </tr>
-                        )}
-                    {userDepartment === 'Служба управления персоналом' && (
-                        <TheadRow headers={['Должность', 'Фамилия', 'Имя', 'Отчество', 'Внутренний', 'Внешний', 'Сотовый 1', 'Сотовый 2', 'email', '', '']}/>
-                    )}
+  return (
+    <table>
+      <thead>
+        {userDepartment != 'Служба управления персоналом' && (
+          <tr>
+            <th colSpan={9}>{data[0].department.String}</th>
+          </tr>
+        )}
+        {userDepartment != 'Служба управления персоналом' && (
+          <TheadRow headers={['Должность', 'Фамилия', 'Имя', 'Отчество', 'Внутренний', 'Внешний', 'Сотовый 1', 'Сотовый 2', 'email']} />
+        )}
 
-                    </thead>
-                    <tbody>
-                       {data.map((item) => (
-                            <Worker key={item.id} data={item} item={{ ...item, onUpdate }}/>                           
-                        ))}
-                    </tbody>
-                </table>
-    )
+        {userDepartment === 'Служба управления персоналом' && (
+          <tr>
+            <th colSpan={11}>{data[0].department.String}</th>
+          </tr>
+        )}
+        {userDepartment === 'Служба управления персоналом' && (
+          <TheadRow headers={['Должность', 'Фамилия', 'Имя', 'Отчество', 'Внутренний', 'Внешний', 'Сотовый 1', 'Сотовый 2', 'email', '', '']} />
+        )}
+      </thead>
+      <tbody>
+        {workers.map((item) => (
+          <Worker
+            key={item.id}
+            data={item}
+            item={{ ...item, onUpdate }}
+            onDismiss={() => handleWorkerDismissed(item.id)} // Передаем функцию для обновления состояния
+          />
+        ))}
+      </tbody>
+    </table>
+  );
 }
