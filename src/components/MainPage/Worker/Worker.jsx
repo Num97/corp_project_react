@@ -56,7 +56,7 @@ export default function Worker(item) {
           setFormData(item.data);
         } else if (event.key === "Enter" && isEditing) {
           try {
-            const response = await fetch("http://10.90.25.125:5002/api/v1/edit_worker", {
+            const response = await fetch("/api/v1/edit_worker", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export default function Worker(item) {
 
   const handleClickAcceptUser = async () => {
     try {
-      const response = await fetch("http://10.90.25.125:5002/api/v1/waiting_edit_list_accept_user", {
+      const response = await fetch("/api/v1/waiting_edit_list_accept_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +113,7 @@ export default function Worker(item) {
 
   const handleClickRejectUser = async () => {
     try {
-      const response = await fetch("http://10.90.25.125:5002/api/v1/waiting_edit_list_reject_user", {
+      const response = await fetch("/api/v1/waiting_edit_list_reject_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -153,7 +153,7 @@ export default function Worker(item) {
     }
 
     try {
-      const response = await fetch("http://10.90.25.125:5002/api/v1/dismiss_worker", {
+      const response = await fetch("/api/v1/dismiss_worker", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
