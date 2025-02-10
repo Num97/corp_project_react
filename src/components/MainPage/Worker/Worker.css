@@ -19,27 +19,31 @@ tr td:first-child {
 	width: 22%;
 }
 
+tr td input {
+	width: 100%;
+}
+
 tr td:last-child {
 	border-radius: 0 8px 8px 0;
 }
 
-tr td:nth-child(6) {
+tr td:nth-child(11) {
 	width: 7%;
 }
 
-tr td:nth-child(5) {
+tr td:nth-child(9) {
 	width: 5%;
 }
 
-tr td:nth-child(7), tr td:nth-child(8) {
+tr td:nth-child(13), tr td:nth-child(15) {
 	width: 12%;
 }
 
-tr td:nth-child(2), tr td:nth-child(3), tr td:nth-child(4) {
+tr td:nth-child(3), tr td:nth-child(5), tr td:nth-child(7) {
 	width: 10%;
 }
 
-tr td:nth-child(9) {
+tr td:nth-child(17) {
 	width: 12%;
 }
 

@@ -4,3 +4,34 @@ header {
     z-index: 49;
     background: wheat;
 }
+
+.clock {
+    margin-right: 15px;
+}
+
+.exit {
+    border: 1px solid black;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    background: rgb(11, 212, 88);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.exit:active {
+    box-shadow: none;
+}
+
+.exit:hover {
+    cursor: pointer;
+}
+
+.clock_exit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

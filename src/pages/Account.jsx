@@ -42,11 +42,6 @@ export default function Account() {
     }
   }, []);
 
-  // const handleTableUpdate = () => {
-  //   setTableKey(prevKey => prevKey + 1); // Изменяем ключ для принудительного рендера
-  //   console.log("onUpdate вызван!");
-  // };
-
   const handleTableUpdate = (newMessage) => {
     setTableKey((prevKey) => prevKey + 1); // Принудительный рендер
     if (newMessage) {
@@ -58,7 +53,7 @@ export default function Account() {
   const checkApiAvailability = () => {
     if (!userData?.id) return;
 
-    const apiUrl = `http://localhost:5002/api/v1/waiting_list_user_get/${userData.id}`;
+    const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_list_user_get/${userData.id}`;
     
     fetch(apiUrl)
       .then((res) => {
@@ -74,7 +69,7 @@ export default function Account() {
     // Функция проверки доступности API
     const checkApiAvailabilityAllUsers = () => {
   
-      const apiUrl = `http://localhost:5002/api/v1/waiting_list_user_get`;
+      const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_list_user_get`;
       
       fetch(apiUrl)
         .then((res) => {
@@ -111,7 +106,7 @@ export default function Account() {
         };
       });
   
-      const apiUrl = `http://localhost:5002/api/v1/waiting_edit_list_add`;
+      const apiUrl = `http://10.90.25.125:5002/api/v1/waiting_edit_list_add`;
   
       fetch(apiUrl, {
         method: 'POST',
@@ -190,7 +185,7 @@ export default function Account() {
           <WorkerTable 
             key={tableKey}  // Принудительно меняем ключ для рендера
             searchQuery='' 
-            apiUrl={`http://localhost:5002/api/v1/waiting_list_user_get/${userData.id}`} 
+            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get/${userData.id}`} 
             onUpdate={handleTableUpdate} 
           />
         </div>
@@ -203,7 +198,7 @@ export default function Account() {
           <WorkerTable 
             searchQuery=''
             key={tableKey} 
-            apiUrl={`http://localhost:5002/api/v1/waiting_list_user_get`}
+            apiUrl={`http://10.90.25.125:5002/api/v1/waiting_list_user_get`}
             onUpdate={handleTableUpdate} 
           />
         </div>

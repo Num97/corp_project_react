@@ -43,7 +43,7 @@ export default defineConfig({
     },
   },
   server: {
-    host: 'localhost',
+    host: '10.90.25.125',
     port: 3002,
     // другие настройки сервера
   },
