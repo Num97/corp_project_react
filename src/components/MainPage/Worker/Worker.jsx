@@ -83,26 +83,36 @@ export default function Worker(item) {
         document.removeEventListener("keydown", handleKeyDown);
       };
     }, [isEditing, formData, item.data]);
-  
 
   const handleClickAcceptUser = async () => {
     try {
-      const response = await fetch("/api/v1/waiting_edit_list_accept_user", {
+      // Отправляем первый запрос (одобрение пользователя)
+      const response1 = await fetch("/api/v1/waiting_edit_list_accept_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(item.data), // Отправляем весь объект item
       });
-
-      if (!response.ok) {
-        throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  
+      if (!response1.ok) {
+        throw new Error(`Ошибка: ${response1.status} ${response1.statusText}`);
       }
-
-      const result = await response.json();
-      console.log("Успешный ответ:", result);
-
-      // Вызываем onUpdate после успешного ответа
+  
+      // Теперь отправляем второй запрос (перенос изображения в photoDir)
+      const response2 = await fetch(`/api/v1/accept_image?id=${item.data.id}`, {
+        method: "POST",
+      });
+  
+      if (!response2.ok) {
+        throw new Error(`Ошибка: ${response2.status} ${response2.statusText}`);
+      }
+  
+      // Если оба запроса успешны, вызываем onUpdate
+      const result1 = await response1.json();
+      const result2 = await response2.json();
+      console.log("Успешный ответ:", result1, result2);
+  
       if (item.item.onUpdate) {
         item.item.onUpdate(`Данные для ${item.data.email.String} одобрены`);
       }
@@ -113,22 +123,33 @@ export default function Worker(item) {
 
   const handleClickRejectUser = async () => {
     try {
-      const response = await fetch("/api/v1/waiting_edit_list_reject_user", {
+      // Отправляем первый запрос (отклонение пользователя)
+      const response1 = await fetch("/api/v1/waiting_edit_list_reject_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(item.data), // Отправляем весь объект item
       });
-
-      if (!response.ok) {
-        throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  
+      if (!response1.ok) {
+        throw new Error(`Ошибка: ${response1.status} ${response1.statusText}`);
       }
-
-      const result = await response.json();
-      console.log("Успешный ответ:", result);
-
-      // Вызываем onUpdate после успешного ответа
+  
+      // Теперь отправляем второй запрос (очистка moderationDir)
+      const response2 = await fetch(`/api/v1/reject_image?id=${item.data.id}`, {
+        method: "POST",
+      });
+  
+      if (!response2.ok) {
+        throw new Error(`Ошибка: ${response2.status} ${response2.statusText}`);
+      }
+  
+      // Если оба запроса успешны, вызываем onUpdate
+      const result1 = await response1.json();
+      const result2 = await response2.json();
+      console.log("Успешный ответ:", result1, result2);
+  
       if (item.item.onUpdate) {
         item.item.onUpdate(`Данные для ${item.data.email.String} отклонены`);
       }
@@ -318,7 +339,7 @@ export default function Worker(item) {
           <DialogHeader>
             <DialogTitle>{`${formData.first_name.String} ${formData.second_name.String} ${formData.surname.String}`}</DialogTitle>
             <DialogDescription>
-              <ImageLoader id={formData.id} alt={'Пользователь еще не установил фотографию'} />
+              <ImageLoader id={formData.id} alt={'Фотография пользователя'} />
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

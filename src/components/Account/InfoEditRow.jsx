@@ -36,6 +36,14 @@ const InfoEditRow = forwardRef(({ data, isEditing }, ref) => {
                         </td>
                     </tr>
                 ))}
+                {/* image input */}
+                <tr className={isEditing ? 'info-input-active' : 'info-input-passive'}>
+                    <td>image</td>
+                    <td>
+                        <input type="file" name="photo"/>
+                    </td>
+                </tr>
+                {/* image input end */}
             </tbody>
         </table>
     );

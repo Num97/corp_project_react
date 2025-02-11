@@ -49,3 +49,11 @@
 .info-moderation-user h3 {
     text-align: center;
 }
+
+.info-edit {
+    margin-top: 0px;
+}
+
+.info-element td:first-child {
+    width: 30%;
+}

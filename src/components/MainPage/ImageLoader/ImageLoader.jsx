@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // Чтобы узнать текущий путь
 
-const ImageLoader = ({ id, alt }) => {
-  const [imageSrc, setImageSrc] = useState(`/images/${id}.jpg`);
+const ImageLoader = ({ id, alt, photoOnly = false }) => {
+  const location = useLocation(); // Получаем текущий путь
+  const isAccountPage = location.pathname.startsWith('/account'); // Проверяем, находимся ли мы в /account
+
+  // Если передан параметр photoOnly, то игнорируем логику по определению пути
+  const [imageSrc, setImageSrc] = useState(
+    photoOnly
+      ? `/api/v1/get_image_photo?id=${id}`  // При photoOnly всегда берём только /api/v1/get_image_photo
+      : isAccountPage
+      ? `/api/v1/get_image_moderation?id=${id}`  // Если на /account, то первым берём /api/v1/get_image_moderation
+      : `/api/v1/get_image_photo?id=${id}`  // В любом другом случае пробуем брать /api/v1/get_image_photo
+  );
 
   useEffect(() => {
-    const extensions = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'NEF']; // Список расширений
-    let currentExtensionIndex = 0;
+    const img = new Image();
+    img.src = imageSrc;
 
-    const tryLoadImage = () => {
-      const img = new Image();
-      img.src = `/images/${id}.${extensions[currentExtensionIndex]}`;
+    img.onload = () => setImageSrc(img.src); // Если загрузилось — используем его
 
-      img.onload = () => {
-        // Если изображение загружено, обновляем состояние
-        setImageSrc(img.src);
-      };
+    img.onerror = () => {
+      if (photoOnly) {
+        // Если photoOnly — сразу fallback на unknown_user.jpg
+        setImageSrc('/images/unknown_user.jpg');
+      } else if (isAccountPage) {
+        // Если не получилось загрузить moderation, пробуем photo
+        const fallbackImg = new Image();
+        fallbackImg.src = `/api/v1/get_image_photo?id=${id}`;
 
-      img.onerror = () => {
-        // Если изображение не загружено, пробуем следующее расширение
-        currentExtensionIndex++;
-        if (currentExtensionIndex < extensions.length) {
-          tryLoadImage(); // Рекурсивно пробуем следующее расширение
-        } else {
-          // Если ни одно расширение не подошло, используем fallback
-          setImageSrc('/images/unknown_user.jpg');
-        }
-      };
+        fallbackImg.onload = () => setImageSrc(fallbackImg.src);
+        fallbackImg.onerror = () => setImageSrc('/images/unknown_user.jpg'); // Если и там ошибка — fallback
+      } else {
+        setImageSrc('/images/unknown_user.jpg'); // Если сразу брали из photo и ошибка — fallback
+      }
     };
-
-    tryLoadImage(); // Начинаем попытки загрузки
-  }, [id]);
+  }, [id, location.pathname, photoOnly]); // Следим за `id`, `location.pathname` и `photoOnly`
 
   return (
     <img
@@ -37,8 +43,7 @@ const ImageLoader = ({ id, alt }) => {
       src={imageSrc}
       alt={alt}
       onError={(e) => {
-        // На случай, если fallback тоже не загрузится
-        e.target.src = '/images/unknown_user.jpg';
+        e.target.src = '/images/unknown_user.jpg'; // На случай, если что-то пошло не так
       }}
     />
   );

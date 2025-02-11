@@ -93,49 +93,68 @@ export default function Account() {
     setMessage('');
   };
 
-  const handleSave = (workerId) => {
+  const handleSave = async (workerId) => {
     if (tableRef.current) {
       const inputs = tableRef.current.querySelectorAll('input');
-      const formData = { id: workerId };
+      const textData = { id: workerId }; // Текстовые данные
+      const fileInput = tableRef.current.querySelector('input[type="file"]');
+      const imageFile = fileInput && fileInput.files[0]; // Файл изображения, если есть
   
+      // Собираем текстовые данные
       inputs.forEach((input) => {
-        const value = input.value.trim();
-        formData[input.name] = {
-          String: value === "" ? "" : value,
-          Valid: value !== ""
-        };
+        if (input.type !== 'file') {
+          const value = input.value.trim();
+          textData[input.name] = {
+            String: value === "" ? "" : value,
+            Valid: value !== ""
+          };
+        }
       });
   
-      const apiUrl = `/api/v1/waiting_edit_list_add`;
-  
-      fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        .then(({ status, body }) => {
-          if (status === 200) {
-            setMessage('Данные отправлены на модерацию');
-  
-            // Повторно проверяем доступность API
-            checkApiAvailability();
-            checkApiAvailabilityAllUsers();
-  
-            // Обновляем ключ для принудительного рендера
-            setTableKey(prevKey => prevKey + 1);
-            setIsEditing(false);
-          } else {
-            console.error('Ошибка:', body);
-            setMessage(`Ошибка: ${body.error || "Неизвестная ошибка"}`);
-          }
-        })
-        .catch((error) => {
-          console.error('Ошибка сети:', error);
-          setMessage('Ошибка сети при отправке данных');
+      try {
+        // Отправляем текстовые данные на первый эндпоинт
+        const textResponse = await fetch('/api/v1/waiting_edit_list_add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(textData),
         });
+  
+        const textResult = await textResponse.json();
+  
+        if (textResponse.status !== 200) {
+          throw new Error(textResult.error || "Ошибка при отправке текстовых данных");
+        }
+  
+        // Если есть изображение, отправляем его на второй эндпоинт
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append('image', imageFile);
+          formData.append('id', workerId); // Можно добавить workerId для связи с текстовыми данными
+  
+          const imageResponse = await fetch('/api/v1/upload_image_moderation', {
+            method: 'POST',
+            body: formData,
+          });
+  
+          const imageResult = await imageResponse.json();
+  
+          if (imageResponse.status !== 200) {
+            throw new Error(imageResult.error || "Ошибка при отправке изображения");
+          }
+        }
+  
+        // Если всё успешно
+        setMessage('Данные отправлены на модерацию');
+        checkApiAvailability();
+        checkApiAvailabilityAllUsers();
+        setTableKey(prevKey => prevKey + 1);
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Ошибка:', error);
+        setMessage(error.message || 'Ошибка при отправке данных');
+      }
     }
   };
   
@@ -174,7 +193,7 @@ export default function Account() {
       <div className='account-info-box'>
         {userData && <InfoEditRow data={userData} isEditing={isEditing} ref={tableRef} />}
         <div className='account-image'>
-          {userData && <ImageLoader id={userData.id} alt={'Фото'} />}
+          {userData && <ImageLoader id={userData.id} alt={'Фото'} photoOnly={true}/>}
         </div>
       </div>
 
