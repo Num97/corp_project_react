@@ -98,6 +98,10 @@ export default function Worker(item) {
       if (!response1.ok) {
         throw new Error(`Ошибка: ${response1.status} ${response1.statusText}`);
       }
+
+      if (item.item.onUpdate) {
+        item.item.onUpdate(`Данные для ${item.data.email.String} одобрены`);
+      }
   
       // Теперь отправляем второй запрос (перенос изображения в photoDir)
       const response2 = await fetch(`/api/v1/accept_image?id=${item.data.id}`, {
@@ -113,9 +117,6 @@ export default function Worker(item) {
       const result2 = await response2.json();
       console.log("Успешный ответ:", result1, result2);
   
-      if (item.item.onUpdate) {
-        item.item.onUpdate(`Данные для ${item.data.email.String} одобрены`);
-      }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
     }
@@ -135,6 +136,10 @@ export default function Worker(item) {
       if (!response1.ok) {
         throw new Error(`Ошибка: ${response1.status} ${response1.statusText}`);
       }
+       
+      if (item.item.onUpdate) {
+        item.item.onUpdate(`Данные для ${item.data.email.String} отклонены`);
+      }
   
       // Теперь отправляем второй запрос (очистка moderationDir)
       const response2 = await fetch(`/api/v1/reject_image?id=${item.data.id}`, {
@@ -150,9 +155,6 @@ export default function Worker(item) {
       const result2 = await response2.json();
       console.log("Успешный ответ:", result1, result2);
   
-      if (item.item.onUpdate) {
-        item.item.onUpdate(`Данные для ${item.data.email.String} отклонены`);
-      }
     } catch (error) {
       console.error("Ошибка при отправке запроса:", error);
     }

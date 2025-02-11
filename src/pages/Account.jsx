@@ -5,6 +5,7 @@ import ImageLoader from '../components/MainPage/ImageLoader/ImageLoader';
 import './PagesStyle/Account.css';
 import editButton from '/editButton.svg';
 import WorkerTable from '../components/MainPage/WorkerTable/WorkerTable';
+import axios from 'axios';
 
 export default function Account() {
   const [userData, setUserData] = useState(null);
@@ -16,30 +17,42 @@ export default function Account() {
   const tableRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
 
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        if (decodedToken) {
-          setUserData({
-            id: decodedToken.id || null,
-            department: { String: decodedToken.department || '', Valid: !!decodedToken.department },
-            position: { String: decodedToken.position || '', Valid: !!decodedToken.position },
-            surname: { String: decodedToken.surname || '', Valid: !!decodedToken.surname },
-            first_name: { String: decodedToken.firstname || '', Valid: !!decodedToken.firstname },
-            second_name: { String: decodedToken.secondname || '', Valid: !!decodedToken.secondname },
-            outside_number: { String: decodedToken.outside_number || '', Valid: !!decodedToken.outside_number },
-            inside_number: { String: decodedToken.inside_number || '', Valid: !!decodedToken.inside_number },
-            first_mobile_number: { String: decodedToken.first_mobile_number || '', Valid: !!decodedToken.first_mobile_number },
-            second_mobile_number: { String: decodedToken.second_mobile_number || '', Valid: !!decodedToken.second_mobile_number },
-            email: { String: decodedToken.email || '', Valid: !!decodedToken.email }
-          });
+      if (token) {
+        try {
+          // Декодируем токен, чтобы получить id
+          const decodedToken = jwtDecode(token);
+          const userId = decodedToken.id;
+
+          if (userId) {
+            // Запрашиваем данные о пользователе с сервера
+            const response = await axios.get(`/api/v1/worker?id=${userId}`);
+            const workerData = response.data[0]; // Извлекаем первый элемент массива
+          
+            // Обновляем состояние с полученными данными
+            setUserData({
+              id: workerData.id,
+              department: { String: workerData.department.String, Valid: workerData.department.Valid },
+              position: { String: workerData.position.String, Valid: workerData.position.Valid },
+              surname: { String: workerData.surname.String, Valid: workerData.surname.Valid },
+              first_name: { String: workerData.first_name.String, Valid: workerData.first_name.Valid },
+              second_name: { String: workerData.second_name.String, Valid: workerData.second_name.Valid },
+              outside_number: { String: workerData.outside_number.String, Valid: workerData.outside_number.Valid },
+              inside_number: { String: workerData.inside_number.String, Valid: workerData.inside_number.Valid },
+              first_mobile_number: { String: workerData.first_mobile_number.String, Valid: workerData.first_mobile_number.Valid },
+              second_mobile_number: { String: workerData.second_mobile_number.String, Valid: workerData.second_mobile_number.Valid },
+              email: { String: workerData.email.String, Valid: workerData.email.Valid },
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
         }
-      } catch (error) {
-        console.error('Invalid token:', error);
       }
-    }
+    };
+
+    fetchUserData();
   }, []);
 
   const handleTableUpdate = (newMessage) => {
@@ -66,21 +79,20 @@ export default function Account() {
       .catch(() => setIsApiAvailable(false));
   };
 
-    // Функция проверки доступности API
-    const checkApiAvailabilityAllUsers = () => {
-  
-      const apiUrl = `/api/v1/waiting_list_user_get`;
-      
-      fetch(apiUrl)
-        .then((res) => {
-          if (res.ok) {
-            setIsApiAvailableAllUsers(true);
-          } else {
-            setIsApiAvailableAllUsers(false);
-          }
-        })
-        .catch(() => setIsApiAvailableAllUsers(false));
-    };
+  // Функция проверки доступности API для всех пользователей
+  const checkApiAvailabilityAllUsers = () => {
+    const apiUrl = `/api/v1/waiting_list_user_get`;
+    
+    fetch(apiUrl)
+      .then((res) => {
+        if (res.ok) {
+          setIsApiAvailableAllUsers(true);
+        } else {
+          setIsApiAvailableAllUsers(false);
+        }
+      })
+      .catch(() => setIsApiAvailableAllUsers(false));
+  };
 
   // Запускаем проверку API при изменении userData.id и при обновлениях
   useEffect(() => {
@@ -157,7 +169,6 @@ export default function Account() {
       }
     }
   };
-  
 
   return (
     <>
@@ -198,7 +209,7 @@ export default function Account() {
       </div>
 
       {/* Используем ключ для принудительного рендера таблицы */}
-      {isApiAvailable && userData.department.String != 'Служба управления персоналом' && (
+      {isApiAvailable && userData?.department.String !== 'Служба управления персоналом' && (
         <div className='info-moderation-user'>
           <h3>Ваши данные на модерации</h3>
           <WorkerTable 
@@ -210,8 +221,8 @@ export default function Account() {
         </div>
       )}
 
-        {/* Модерация для кадрового отдела */}
-        {userData && userData.department.String === 'Служба управления персоналом' && isApiAvailableAllUsers && (
+      {/* Модерация для кадрового отдела */}
+      {userData && userData.department.String === 'Служба управления персоналом' && isApiAvailableAllUsers && (
         <div className='info-moderation-user'>
           <h3>Данные пользователей на модерации</h3>
           <WorkerTable 
