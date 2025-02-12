@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import InfoEditRow from '../components/Account/InfoEditRow';
+import InfoEditRow from '../components/Account/InfoEditRow/InfoEditRow';
 import ImageLoader from '../components/MainPage/ImageLoader/ImageLoader';
 import './PagesStyle/Account.css';
 import editButton from '/editButton.svg';
@@ -204,7 +204,7 @@ export default function Account() {
       <div className='account-info-box'>
         {userData && <InfoEditRow data={userData} isEditing={isEditing} ref={tableRef} />}
         <div className='account-image'>
-          {userData && <ImageLoader id={userData.id} alt={'Фото'} photoOnly={true}/>}
+          {userData && <ImageLoader id={userData.id} alt={'Фото'} photoOnly={true} updateTrigger={Math.floor(Date.now() / 300000)}/>}
         </div>
       </div>
 

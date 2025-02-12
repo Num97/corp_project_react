@@ -1,6 +1,7 @@
 import './Worker.css';
 import React, { useState, useEffect } from "react";
 import ImageLoader from '../ImageLoader/ImageLoader';
+import EditPhotoUploader from '../../Account/EditPhotoUploader/EditPhotoUploader';
 import { useLocation } from "react-router-dom";
 import {
   Dialog,
@@ -37,6 +38,7 @@ export default function Worker(item) {
   const [isOpen, setIsOpen] = useState(false);
   const userDepartment = getUserDepartment(); // Получаем department из токена
   const location = useLocation();
+  const [photoUpdated, setPhotoUpdated] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(item.data); // Состояние для хранения данных из инпутов
 
@@ -47,6 +49,10 @@ export default function Worker(item) {
         ...prevData,
         [name]: { ...prevData[name], String: value }, // Меняем только `String`
       }));
+    };
+
+    const handlePhotoUploadSuccess = () => {
+      setPhotoUpdated((prev) => !prev);
     };
   
     useEffect(() => {
@@ -340,8 +346,13 @@ export default function Worker(item) {
         <DialogContent className="modal-bg-gray">
           <DialogHeader>
             <DialogTitle>{`${formData.first_name.String} ${formData.second_name.String} ${formData.surname.String}`}</DialogTitle>
+            
+            {userDepartment === 'Служба управления персоналом' && location.pathname === "/" && (
+              <EditPhotoUploader workerId={formData.id} onUploadSuccess={handlePhotoUploadSuccess}/>
+            )}
             <DialogDescription>
-              <ImageLoader id={formData.id} alt={'Фотография пользователя'} />
+            
+              <ImageLoader id={formData.id} alt={'Фотография пользователя'} key={photoUpdated} updateTrigger={Math.floor(Date.now() / 600000) + photoUpdated} />
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

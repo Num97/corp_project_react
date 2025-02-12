@@ -1,41 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'; // Чтобы узнать текущий путь
+import { useLocation } from 'react-router-dom';
 
-const ImageLoader = ({ id, alt, photoOnly = false }) => {
-  const location = useLocation(); // Получаем текущий путь
-  const isAccountPage = location.pathname.startsWith('/account'); // Проверяем, находимся ли мы в /account
+const ImageLoader = ({ id, alt, photoOnly = false, updateTrigger = null }) => {
+  const location = useLocation();
+  const isAccountPage = location.pathname.startsWith('/account');
 
-  // Если передан параметр photoOnly, то игнорируем логику по определению пути
-  const [imageSrc, setImageSrc] = useState(
-    photoOnly
-      ? `/api/v1/get_image_photo?id=${id}`  // При photoOnly всегда берём только /api/v1/get_image_photo
+  // Добавляем updateTrigger для принудительного обновления изображения
+  const generateImageUrl = () => {
+    const baseUrl = photoOnly
+      ? `/api/v1/get_image_photo?id=${id}`
       : isAccountPage
-      ? `/api/v1/get_image_moderation?id=${id}`  // Если на /account, то первым берём /api/v1/get_image_moderation
-      : `/api/v1/get_image_photo?id=${id}`  // В любом другом случае пробуем брать /api/v1/get_image_photo
-  );
+      ? `/api/v1/get_image_moderation?id=${id}`
+      : `/api/v1/get_image_photo?id=${id}`;
+
+    return updateTrigger ? `${baseUrl}&t=${updateTrigger}` : baseUrl;
+  };
+
+  const [imageSrc, setImageSrc] = useState(generateImageUrl());
 
   useEffect(() => {
     const img = new Image();
     img.src = imageSrc;
 
-    img.onload = () => setImageSrc(img.src); // Если загрузилось — используем его
+    img.onload = () => setImageSrc(img.src);
 
     img.onerror = () => {
       if (photoOnly) {
-        // Если photoOnly — сразу fallback на unknown_user.jpg
         setImageSrc('/images/unknown_user.jpg');
       } else if (isAccountPage) {
-        // Если не получилось загрузить moderation, пробуем photo
         const fallbackImg = new Image();
         fallbackImg.src = `/api/v1/get_image_photo?id=${id}`;
 
         fallbackImg.onload = () => setImageSrc(fallbackImg.src);
-        fallbackImg.onerror = () => setImageSrc('/images/unknown_user.jpg'); // Если и там ошибка — fallback
+        fallbackImg.onerror = () => setImageSrc('/images/unknown_user.jpg');
       } else {
-        setImageSrc('/images/unknown_user.jpg'); // Если сразу брали из photo и ошибка — fallback
+        setImageSrc('/images/unknown_user.jpg');
       }
     };
-  }, [id, location.pathname, photoOnly]); // Следим за `id`, `location.pathname` и `photoOnly`
+  }, [id, location.pathname, photoOnly, updateTrigger]); // Теперь следим и за updateTrigger
 
   return (
     <img
@@ -43,7 +45,7 @@ const ImageLoader = ({ id, alt, photoOnly = false }) => {
       src={imageSrc}
       alt={alt}
       onError={(e) => {
-        e.target.src = '/images/unknown_user.jpg'; // На случай, если что-то пошло не так
+        e.target.src = '/images/unknown_user.jpg';
       }}
     />
   );
