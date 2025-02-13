@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 import RecoveryBlock from './components/Login/RecoveryBlock/RecoveryBlock';
 
+
 // Компонент для проверки токена
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token'); // Проверяем наличие токена в localStorage
@@ -25,7 +26,7 @@ function App() {
               <MainPage />
             </ProtectedRoute>
           }
-        />
+        />       
         <Route path="/login" element={<Login />} />
         <Route path='/signup' element={<RecoveryBlock/>} />
       </Routes>

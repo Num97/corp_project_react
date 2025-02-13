@@ -6,6 +6,7 @@ import './PagesStyle/Account.css';
 import editButton from '/editButton.svg';
 import WorkerTable from '../components/MainPage/WorkerTable/WorkerTable';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function Account() {
   const [userData, setUserData] = useState(null);
@@ -15,6 +16,7 @@ export default function Account() {
   const [isApiAvailableAllUsers, setIsApiAvailableAllUsers] = useState(false);
   const [tableKey, setTableKey] = useState(0);  // Используем ключ для принудительного рендера
   const tableRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -92,6 +94,10 @@ export default function Account() {
         }
       })
       .catch(() => setIsApiAvailableAllUsers(false));
+  };
+
+  const handleAddUserClick = () => {
+    navigate('/add_user');
   };
 
   // Запускаем проверку API при изменении userData.id и при обновлениях
@@ -194,6 +200,12 @@ export default function Account() {
           </div>
         )}
 
+      {userData && userData.department.String === 'Служба управления персоналом' && (
+        <div className='add-user-block'>
+            <button className='add-user-button-navigate' onClick={handleAddUserClick}>Добавить пользователя</button>
+        </div>
+      )}
+
         {message && (
           <div className="success-message">
             <h2>{message}</h2>
@@ -207,6 +219,12 @@ export default function Account() {
           {userData && <ImageLoader id={userData.id} alt={'Фото'} photoOnly={true} updateTrigger={Math.floor(Date.now() / 300000)}/>}
         </div>
       </div>
+
+      {/* {userData && userData.department.String === 'Служба управления персоналом' && (
+      <div className='add-user-block'>
+          <button className='add-user-button-navigate' onClick={handleAddUserClick}>Добавить пользователя</button>
+      </div>
+      )} */}
 
       {/* Используем ключ для принудительного рендера таблицы */}
       {isApiAvailable && userData?.department.String !== 'Служба управления персоналом' && (

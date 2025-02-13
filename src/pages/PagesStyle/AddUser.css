@@ -1,0 +1,11 @@
+.add-user-form {
+    margin-top: 0px;
+}
+
+.add-user-form table {
+    width: 50%;
+}
+
+.add-user-form td:first-child {
+    width: 5%;
+}

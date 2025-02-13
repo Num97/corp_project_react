@@ -1,27 +1,3 @@
-// import { useState } from "react"
-// import './Header.css'
-// import SearchInput from "../SearchInput/SearchInput"
-// import PersonalAccountButton from "../PersonalAccountButton/PersonalAccountButton"
-// import exitButton from '/exit.svg'
-
-// export default function Header({ onSearchChange }) {
-//     const [now, setNow] = useState(new Date())
-//     setInterval(()=> setNow(new Date()), 1000)
-
-//     return (
-//     <header>
-//         <PersonalAccountButton/>
-//         <SearchInput onSearchChange={onSearchChange}/>
-//         <div className="clock_exit">
-//             <span className="clock">Сейчас: {now.toLocaleTimeString()}</span>
-//             <div className="exit">
-//                 <img src={exitButton} alt="Exit Button" width={30} />
-//             </div>
-//         </div>
-//     </header>
-//     )
-// }
-
 import { useState, useEffect } from "react";
 import "./Header.css";
 import SearchInput from "../SearchInput/SearchInput";
