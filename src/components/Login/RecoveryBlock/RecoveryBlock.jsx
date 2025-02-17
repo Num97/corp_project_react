@@ -14,7 +14,7 @@ export default function RecoveryBlock() {
         setMessage(''); // Очищаем предыдущее сообщение
 
         try {
-            const response = await fetch('http://10.90.25.243:5002/api/v1/signup', {
+            const response = await fetch('/api/v1/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export default function RecoveryBlock() {
                 setMessage('Пароль придет на почту в течение пары минут');
             } else {
                 // Если статус ответа не 200-299
-                setMessage('Что-то пошло не так');
+                setMessage('Пожалуйста, используйте @olamnet.com или обратитесь в отдел кадров');
             }
         } catch (err) {
             // Если произошла ошибка при запросе

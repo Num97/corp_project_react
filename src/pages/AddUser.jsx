@@ -23,11 +23,10 @@ export default function AddUser() {
         if (formRef.current) {
             const inputs = formRef.current.querySelectorAll('input');
             const fileInput = formRef.current.querySelector('input[type="file"]');
-            const imageFile = fileInput && fileInput.files[0]; // Файл изображения, если есть
-
+            const imageFile = fileInput && fileInput.files[0];
+    
             const textData = {};
-
-            // Собираем текстовые данные
+    
             inputs.forEach((input) => {
                 if (input.type !== 'file') {
                     const value = input.value.trim();
@@ -39,11 +38,9 @@ export default function AddUser() {
                     }
                 }
             });
-
+    
             try {
-                setMessage(''); // Очищаем сообщение перед отправкой
-
-                // Отправляем текстовые данные на первый эндпоинт
+                setMessage('');
                 const textResponse = await fetch('/api/v1/add_worker', {
                     method: 'POST',
                     headers: {
@@ -51,35 +48,58 @@ export default function AddUser() {
                     },
                     body: JSON.stringify(textData),
                 });
-
+    
                 const textResult = await textResponse.json();
-
+    
                 if (textResponse.status !== 200) {
                     throw new Error(textResult.error || "Ошибка при отправке текстовых данных");
                 }
-
+    
                 const workerId = textResult.workerId;
-
-                // Если есть изображение, отправляем его на второй эндпоинт
+    
                 if (imageFile) {
                     const formData = new FormData();
                     formData.append('image', imageFile);
-                    formData.append('id', workerId); // Можно добавить workerId для связи с текстовыми данными
-
+                    formData.append('id', workerId);
+    
                     const imageResponse = await fetch('/api/v1/upload_image_photo_directly', {
                         method: 'POST',
                         body: formData,
                     });
-
+    
                     const imageResult = await imageResponse.json();
-
+    
                     if (imageResponse.status !== 200) {
                         throw new Error(imageResult.error || "Ошибка при отправке изображения");
                     }
                 }
-
-                // Если всё успешно
+    
                 setMessage('Пользователь успешно добавлен');
+    
+                // Очистка состояния
+                setUserData({
+                    id: 0,
+                    department: '',
+                    position: '',
+                    surname: '',
+                    first_name: '',
+                    second_name: '',
+                    outside_number: '',
+                    inside_number: '',
+                    first_mobile_number: '',
+                    second_mobile_number: '',
+                    email: '',
+                });
+    
+                // Очистка инпутов вручную
+                inputs.forEach((input) => {
+                    if (input.type !== 'file') {
+                        input.value = '';
+                    }
+                });
+    
+                if (fileInput) fileInput.value = ''; // Очистка файла
+    
             } catch (error) {
                 console.error('Ошибка:', error);
                 setMessage(error.message || 'Ошибка при отправке данных');

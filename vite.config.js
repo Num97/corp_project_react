@@ -18,11 +18,11 @@ export default defineConfig({
     },
   },
   server: {
-    host: 'localhost',
+    host: '10.90.25.125',
     port: 3002,
     proxy: {
       "/api": {
-        target: "http://localhost:5002", // Адрес вашего Go-сервера
+        target: "http://10.90.25.125:5002", // Адрес вашего Go-сервера
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, ""),
       },
