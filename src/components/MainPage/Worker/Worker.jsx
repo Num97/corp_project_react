@@ -12,10 +12,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { jwtDecode } from 'jwt-decode';
-import checkButton from '/checkButton.svg';
-import trashButton from '/trashButton.svg';
-import penEditButton from '/penEditButton.svg';
-import rejectButton from '/rejectButton.svg';
+import checkButton from '/images/checkButton.svg';
+import trashButton from '/images/trashButton.svg';
+import penEditButton from '/images/penEditButton.svg';
+import rejectButton from '/images/rejectButton.svg';
 
 // Функция получения department из токена (пример)
 function getUserDepartment() {

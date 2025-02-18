@@ -3,7 +3,7 @@ import "./Header.css";
 import SearchInput from "../SearchInput/SearchInput";
 import PersonalAccountButton from "../PersonalAccountButton/PersonalAccountButton";
 import { useNavigate } from "react-router-dom"; // Используем для навигации
-import exitButton from "/exit.svg";
+import exitButton from "/images/exit.svg";
 
 export default function Header({ onSearchChange }) {
     const [now, setNow] = useState(new Date());

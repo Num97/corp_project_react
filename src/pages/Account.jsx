@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import InfoEditRow from '../components/Account/InfoEditRow/InfoEditRow';
 import ImageLoader from '../components/MainPage/ImageLoader/ImageLoader';
 import './PagesStyle/Account.css';
-import editButton from '/editButton.svg';
+import editButton from '/images/editButton.svg';
 import WorkerTable from '../components/MainPage/WorkerTable/WorkerTable';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
